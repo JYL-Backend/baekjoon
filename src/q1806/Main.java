@@ -1,53 +1,56 @@
 package q1806;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int[] board;
-    static int min;
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int n= sc.nextInt();
-        int s= sc.nextInt();
+    static int INF = 100001;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st= new StringTokenizer(br.readLine());
 
-        min = n;
-        board = new int[n];
+        int n = Integer.parseInt(st.nextToken());
+        int s = Integer.parseInt(st.nextToken());
 
-        long sum = 0;
+        st = new StringTokenizer(br.readLine());
+
+        int[] list = new int[n];
+
         for(int i=0; i<n; i++){
-            board[i] = sc.nextInt();
-            sum += board[i];
-        }
-        // 합 만들기 불가
-        if(sum < s) {
-            System.out.print(0);
-            return;
+            list[i] = Integer.parseInt(st.nextToken());
         }
 
-        int l = 0;
-        int r = 0;
-
-        getResult(l,r,board[0],1, s);
-        System.out.println( min);
-    }
-
-    private static void getResult(int l, int r, int sum,int count, int s) {
-        // 목표값 이상일 때
-        if(s <= sum){
-            min = count < min ? count : min;
-            // 1개라면 최고결과니 리턴
-            if(count == 1) {
-                return;
+        int l=0,r=0;
+        int sum = list[0];
+        int result = INF;
+        while(l!=n && r!=n){
+            if(l==r){
+                if(list[l] >= s){
+                    System.out.println(1);
+                    return;
+                }
+                if(r == n-1)break;
+                sum += r+1 == n ? 0 : list[r+1];
+                r++; continue;
             }
-            // 2개 이상이면 줄여나가자
-            getResult(l+1,r,sum-board[l], count-1, s);
+
+            if(sum >= s){
+                result = result < r-l+1 ? result : r-l+1;
+                sum -= list[l];
+                l++;
+                continue;
+            }
+            if(r!= n-1){
+                r++;
+                sum += r == n ? 0 : list[r];
+                continue;
+            }
+            sum -= list[l];
+            l++;
         }
-        // 목표값 미만일 때
-        // r이 마지막이면 불가능이므로 제일 큰 값 리턴
-        if(r == board.length-1){
-            return;
-        }
-        // 오른쪽으로 확장하자
-        getResult(l,r+1,sum+board[r+1], count+1, s);
+        System.out.println(result == INF ? 0 : result);
     }
 }
